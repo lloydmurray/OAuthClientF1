@@ -1,1 +1,7 @@
 Readme for OAuthUtil
+
+Dependencies:
+commons-codec-1.7.jar (for base64 encoding)
+log4h-1.2.17.jar (for logging)
+
+
