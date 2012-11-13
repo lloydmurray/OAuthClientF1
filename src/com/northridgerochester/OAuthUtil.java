@@ -90,10 +90,10 @@ public class OAuthUtil {
         _consumerKey = consumerKey;
         _consumerSecret = consumerSecret;
 
-        logger.info("requestUrl=" + _requestUrl);
-        logger.info("userAuthorizeUrl=" + _userAuthorizeUrl);
-        logger.info("accessUrl=" + _accessUrl);
-        logger.info("trustedUrl=" + _trustedUrl);
+        logger.debug("requestUrl=" + _requestUrl);
+        logger.debug("userAuthorizeUrl=" + _userAuthorizeUrl);
+        logger.debug("accessUrl=" + _accessUrl);
+        logger.debug("trustedUrl=" + _trustedUrl);
 
     }
 
@@ -279,10 +279,9 @@ public class OAuthUtil {
 
     // Supports 2nd party, placing credentials in body of request
 
-    public AuthenticationToken getAccessToken(String personUrl, byte[] creds) throws IOException, InvalidKeyException, NoSuchAlgorithmException {
-        logger.info("in getAccessToken.");
-        logger.info("personUrl = " + personUrl);
-        logger.info("creds = " + creds.toString());
+    public AuthenticationToken getAccessToken(byte[] creds) throws IOException, InvalidKeyException, NoSuchAlgorithmException {
+        logger.debug("in getAccessToken.");
+        logger.debug("creds = " + creds.toString());
 
         AuthenticationToken accessToken;
         URL url = new URL(getTrustedUrl());
@@ -315,7 +314,7 @@ public class OAuthUtil {
         out.close();
 
         int code = request.getResponseCode();
-        logger.info("responseCode:" + code);
+        logger.debug("responseCode:" + code);
 
         if (code != 200) {
             logger.debug("code is not 200");
@@ -349,7 +348,7 @@ public class OAuthUtil {
         }
         br.close();
         String response = sb.toString();
-        logger.info("response is:" + response);
+        logger.debug("response is:" + response);
 
 
         String[] tokeninfo = response.trim().split("&");
@@ -369,11 +368,11 @@ public class OAuthUtil {
 
     public HttpURLConnection createWebRequestFromPartialUrl(String partialUrl, AuthenticationToken accessToken,
                                                             String httpRequestMethod, String contentType) throws IOException, InvalidKeyException, NoSuchAlgorithmException {
-        logger.info("In createWebRequestFromPartialUrl.");
-        logger.info("partialUrl=" + partialUrl);
-        logger.info("accessToken=" + accessToken);
-        logger.info("httpRequestMethod=" + httpRequestMethod);
-        logger.info("contentType=" + contentType);
+        logger.debug("In createWebRequestFromPartialUrl.");
+        logger.debug("partialUrl=" + partialUrl);
+        logger.debug("accessToken=" + accessToken);
+        logger.debug("httpRequestMethod=" + httpRequestMethod);
+        logger.debug("contentType=" + contentType);
 
         String fullUrl = createAPIUrl(_churchCode, _baseAPIUrl, _apiVersion, partialUrl);
         logger.debug("Request URL: " + fullUrl);
@@ -381,7 +380,7 @@ public class OAuthUtil {
     }
 
     private HttpURLConnection createWebRequest(String fullUrl, AuthenticationToken accessToken, String httpRequestMethod, String contentType) throws IOException, InvalidKeyException, NoSuchAlgorithmException {
-        logger.info("in createWebRequest");
+        logger.debug("in createWebRequest");
         HttpURLConnection webRequest;
 
         URL uri = new URL(fullUrl);
@@ -411,11 +410,11 @@ public class OAuthUtil {
     // If using Third party - we have F1 generate the login page and accept the credentials.
 
     public byte[] buildCredentials(String username, String password) {
-        logger.info("In buildCredentials.  username: " + username + " password: " + password);
+        logger.debug("In buildCredentials.  username: " + username + " password: " + password);
         byte[] data = (username + " " + password).getBytes();
         byte[] byteEncoded = Base64.encodeBase64(data);
         String encodedDataForBody = byteEncoded.toString();
-        logger.info("returning encodedData:" + encodedDataForBody);
+        logger.debug("returning encodedData:" + encodedDataForBody);
         return byteEncoded;
     }
 
@@ -434,17 +433,17 @@ public class OAuthUtil {
     public String generateSignatureBase(URL url, String consumerKey, String token, String tokenSecret,
                                         String httpMethod, String timeStamp, String nonce, String signatureType,
                                         String normalizedUrl, String normalizedRequestParameters) throws UnsupportedEncodingException {
-        logger.info("in generateSignatureBase.");
-        logger.info("url:" + url);
-        logger.info("consumerKey:" + consumerKey);
-        logger.info("token:" + token);
-        logger.info("tokenSecret:" + tokenSecret);
-        logger.info("httpMethod:" + httpMethod);
-        logger.info("timeStamp:" + timeStamp);
-        logger.info("nonce:" + nonce);
-        logger.info("signatureType:" + signatureType);
-        logger.info("normalizedUrl:" + normalizedUrl);
-        logger.info("normalizedRequestParams:" + normalizedRequestParameters);
+        logger.debug("in generateSignatureBase.");
+        logger.debug("url:" + url);
+        logger.debug("consumerKey:" + consumerKey);
+        logger.debug("token:" + token);
+        logger.debug("tokenSecret:" + tokenSecret);
+        logger.debug("httpMethod:" + httpMethod);
+        logger.debug("timeStamp:" + timeStamp);
+        logger.debug("nonce:" + nonce);
+        logger.debug("signatureType:" + signatureType);
+        logger.debug("normalizedUrl:" + normalizedUrl);
+        logger.debug("normalizedRequestParams:" + normalizedRequestParameters);
 
         if (token == null) {
             token = "";
@@ -488,7 +487,7 @@ public class OAuthUtil {
             }
         }
         normalizedUrl += url.getPath();
-        logger.info("normalizedUrl: " + normalizedUrl);
+        logger.debug("normalizedUrl: " + normalizedUrl);
         normalizedRequestParameters = normalizeRequestParameters(parameters);
 
         StringBuilder signatureBase = new StringBuilder();
@@ -496,7 +495,7 @@ public class OAuthUtil {
         signatureBase.append(encode(normalizedUrl)).append("&");
         signatureBase.append(encode(normalizedRequestParameters));
 
-        logger.info("returning signatureBase:" + signatureBase);
+        logger.debug("returning signatureBase:" + signatureBase);
 
         return signatureBase.toString();
     }
@@ -517,37 +516,37 @@ public class OAuthUtil {
                                     String tokenSecret, String httpMethod, String timeStamp,
                                     String nonce, String normalizedUrl, String normalizedRequestParameters,
                                     String signatureBase) throws NoSuchAlgorithmException, UnsupportedEncodingException, InvalidKeyException {
-        logger.info("in generateSignature.");
-        logger.info("url:" + url);
-        logger.info("consumerKey:" + consumerKey);
-        logger.info("consumerSecret:" + consumerSecret);
-        logger.info("token:" + token);
-        logger.info("tokenSecret:" + tokenSecret);
-        logger.info("httpMethod:" + httpMethod);
-        logger.info("timeStamp:" + timeStamp);
-        logger.info("nonce:" + nonce);
-        logger.info("normalizedUrl:" + normalizedUrl);
-        logger.info("normalizedRequestParams" + normalizedRequestParameters);
-        logger.info("signatureBase:" + signatureBase);
+        logger.debug("in generateSignature.");
+        logger.debug("url:" + url);
+        logger.debug("consumerKey:" + consumerKey);
+        logger.debug("consumerSecret:" + consumerSecret);
+        logger.debug("token:" + token);
+        logger.debug("tokenSecret:" + tokenSecret);
+        logger.debug("httpMethod:" + httpMethod);
+        logger.debug("timeStamp:" + timeStamp);
+        logger.debug("nonce:" + nonce);
+        logger.debug("normalizedUrl:" + normalizedUrl);
+        logger.debug("normalizedRequestParams" + normalizedRequestParameters);
+        logger.debug("signatureBase:" + signatureBase);
 
         signatureBase = generateSignatureBase(url, consumerKey, token, tokenSecret, httpMethod, timeStamp, nonce, HMACSHA1SignatureType, normalizedUrl, normalizedRequestParameters);
         Mac mac = Mac.getInstance(HMAC_SHA1);
         String keyString;
         if (tokenSecret == null || tokenSecret.length() == 0) {
-            logger.info("tokenSecret is empty");
+            logger.debug("tokenSecret is empty");
             keyString = encode(consumerSecret) + "&";
         }
         else {
-            logger.info("tokenSecret is not empty");
+            logger.debug("tokenSecret is not empty");
             keyString = encode(consumerSecret) + "&" + encode(tokenSecret);
         }
 
-        logger.info("generating secret key spec using keyString:" + keyString);
+        logger.debug("generating secret key spec using keyString:" + keyString);
         SecretKeySpec key = new SecretKeySpec((keyString).getBytes(CHARSET), HMAC_SHA1);
-        logger.info("initing mac with key");
+        logger.debug("initing mac with key");
         mac.init(key);
 
-        logger.info("calling computeHash");
+        logger.debug("calling computeHash");
         return computeHash(mac, signatureBase);
 
     }
@@ -558,7 +557,7 @@ public class OAuthUtil {
     /// <returns></returns>
     public String generateTimeStamp() {
         String retVal = String.valueOf(getTs()); 
-        logger.info("in generateTimeStamp. timestamp is:" + retVal);
+        logger.debug("in generateTimeStamp. timestamp is:" + retVal);
         return retVal;
     }
 
@@ -570,7 +569,7 @@ public class OAuthUtil {
         Long ts = getTs();
         String retVal =  String.valueOf(ts + new Random().nextInt());
 
-        logger.info("in generateNonce.  retVal:" + retVal);
+        logger.debug("in generateNonce.  retVal:" + retVal);
         return retVal;
     }
 
@@ -586,7 +585,7 @@ public class OAuthUtil {
     /// <returns>a Base64 String of the hash value</returns>
 
     private String computeHash(Mac hashAlgorithm, String data) throws UnsupportedEncodingException {
-        logger.info("in computerHash.  data:" + data);
+        logger.debug("in computerHash.  data:" + data);
         if (hashAlgorithm == null) {
             throw new IllegalArgumentException("hashAlgorithm");
         }
@@ -600,7 +599,7 @@ public class OAuthUtil {
 
         byte[] bytes = hashAlgorithm.doFinal(data.getBytes(CHARSET));
         String finalHash = new String(Base64.encodeBase64(bytes)).replace(CARRIAGE_RETURN, EMPTY_STRING);
-        logger.info("returning from computeHash:" + finalHash);
+        logger.debug("returning from computeHash:" + finalHash);
         return finalHash;
     }
 
@@ -611,7 +610,7 @@ public class OAuthUtil {
     /// <returns>A list of QueryParameter each containing the parameter name and value</returns>
 
     private List<QueryParameter> getQueryParameters(String parameters) {
-        logger.info("in getQueryParameters.  params =" + parameters);
+        logger.debug("in getQueryParameters.  params =" + parameters);
 
         List<QueryParameter> result = new ArrayList<QueryParameter>();
 
@@ -643,7 +642,7 @@ public class OAuthUtil {
     }
 
     public static String encode(String plain) throws UnsupportedEncodingException {
-        logger.info("in encode.  plain=" + plain);
+        logger.debug("in encode.  plain=" + plain);
         Map<String, String> ENCODING_RULES = new HashMap<String, String>();
         ENCODING_RULES.put("*", "%2A");
         ENCODING_RULES.put("+", "%2B"); //Changed from 20 to 2B - I think UrlEncoder is doing this correctly, tho.
@@ -654,11 +653,11 @@ public class OAuthUtil {
         }
         String encoded = "";
         encoded = URLEncoder.encode(plain, CHARSET);
-        logger.info("1st encoding:" + encoded);
+        logger.debug("1st encoding:" + encoded);
         for (Map.Entry<String, String> rule : ENCODING_RULES.entrySet()) {
             encoded = applyRule(encoded, rule.getKey(), rule.getValue());
         }
-        logger.info("final encoding:" + encoded);
+        logger.debug("final encoding:" + encoded);
         return encoded;
     }
 
@@ -674,7 +673,7 @@ public class OAuthUtil {
     /// <returns>a String representing the normalized parameters</returns>
 
     private String normalizeRequestParameters(List<QueryParameter> parameters) throws UnsupportedEncodingException {
-        logger.info("in normalizeRequestParameters.  params size is:" + parameters.size());
+        logger.debug("in normalizeRequestParameters.  params size is:" + parameters.size());
         StringBuilder sb = new StringBuilder();
         QueryParameter p = null;
         for (int i = 0; i < parameters.size(); i++) {
@@ -692,13 +691,13 @@ public class OAuthUtil {
 
     private String buildOAuthHeader(String consumerKey, String nonce, String signature,
                                     String signatureMethod, String timestamp, String token) throws UnsupportedEncodingException {
-        logger.info("in buildOAuthHeader");
-        logger.info("consumerKey:" + consumerKey);
-        logger.info("nonce:" + nonce);
-        logger.info("signature:" + signature);
-        logger.info("signatureMethod:" + signatureMethod);
-        logger.info("timestamp:" + timestamp);
-        logger.info("token:" + token);
+        logger.debug("in buildOAuthHeader");
+        logger.debug("consumerKey:" + consumerKey);
+        logger.debug("nonce:" + nonce);
+        logger.debug("signature:" + signature);
+        logger.debug("signatureMethod:" + signatureMethod);
+        logger.debug("timestamp:" + timestamp);
+        logger.debug("token:" + token);
 
         StringBuilder sb = new StringBuilder();
         sb.append("OAuth oauth_consumer_key=\"").append(encode(consumerKey)).append("\",");
@@ -711,7 +710,7 @@ public class OAuthUtil {
         }
         sb.append("oauth_version=\"").append(encode("1.0")).append("\"");
 
-        logger.info("retval=" + sb.toString());
+        logger.debug("retval=" + sb.toString());
         return sb.toString();
     }
 
@@ -752,7 +751,7 @@ public class OAuthUtil {
         public QueryParameter(String name, String value) {
             this.name = name;
             this.value = value;
-            logger.info("Creating queryParameter.  name:" + name + " value:" + value);
+            logger.debug("Creating queryParameter.  name:" + name + " value:" + value);
         }
 
         public String getName() {
